@@ -256,6 +256,33 @@ valida run cat-alpha log
 
 [See the docs for more details](https://lita.gitbook.io/lita-documentation/usage/using-llvm-libc) on using the bundled version of `libc` for Valida.
 
+## Compiling and running WASM on Valida
+
+The examples at `/valida-toolchain/examples/wasm` demonstrate WebAssembly
+to Valida compilation.  They are present at the stated path on a system where
+the toolchain is installed, including in an instance of the toolchain Docker image.
+
+The `io-program-via-rust` example is a Rust program that parses an integer
+from standard input, squares it and prints the result to standard output.
+The program is compiled to `.wasm` file with `wasm32-wasip1` Rust target.
+Rust is only used to conveniently generate `.wasm` assembly file.
+
+The `exit-1-program-via-rust` example demonstrates a program which exits
+with an exit code 1.
+
+The `fibonacci-via-rust` example computes n-th fibonacci number.
+
+To compile and run the examples execute the script: `./compile_run.sh`.
+
+It's assumed that Valida toolchain is installed and is located at default
+installation location: `/valida-toolchain`.
+
+It's assumed that `wasm2c` and `wat2wasm` in version 1.0.34 are in PATH.
+On Ubuntu 24.04 these can be installed with a command: `apt install wabt`.
+
+All the examples use `/valida-toolchain/bin/compile-wasm.sh` to compile a
+`.wasm` file into a valida executable. See Valida Gitbook for more details
+about WASM support and the usage of the script.
 
 # Reporting issues
 
