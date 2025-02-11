@@ -281,7 +281,7 @@ It's assumed that `wasm2c` and `wat2wasm` in version 1.0.34 are in PATH.
 On Ubuntu 24.04 these can be installed with a command: `apt install wabt`.
 
 All the examples use `/valida-toolchain/bin/compile-wasm.sh` to compile a
-`.wasm` file into a valida executable. See Valida Gitbook for more details
+`.wasm` file into a valida executable. See [Valida Gitbook](https://lita.gitbook.io/lita-documentation/quick-start/valida-compiler-toolchain/wasm-usage) for more details
 about WASM support and the usage of the script.
 
 # Reporting issues
