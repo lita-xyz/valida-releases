@@ -19,7 +19,7 @@ To install and use the toolchain via Docker on a 64-bit computer with an Intel-c
 
 ```bash
 # Download the container
-docker pull ghcr.io/lita-xyz/llvm-valida-releases/valida-build-container:v0.8.0-alpha-amd64
+docker pull ghcr.io/lita-xyz/llvm-valida-releases/valida-build-container:v0.9.0-alpha-amd64
 
 # cd your-valida-project
 
