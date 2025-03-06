@@ -24,7 +24,7 @@ docker pull ghcr.io/lita-xyz/llvm-valida-releases/valida-build-container:v0.8.0-
 # cd your-valida-project
 
 # Enter the container:
-docker run --platform linux/amd64 -it --rm -v $(realpath .):/src ghcr.io/lita-xyz/llvm-valida-releases/valida-build-container:v0.8.0-alpha-amd64
+docker run --platform linux/amd64 -it --rm -v $(realpath .):/src ghcr.io/lita-xyz/llvm-valida-releases/valida-build-container:v0.9.0-alpha-amd64
 
 # You are now in a shell with the valida rust toolchain installed!
 ```
@@ -35,19 +35,19 @@ To install and use the toolchain via Docker on a 64-bit computer with an ARM64-c
 
 ```bash
 # Download the container
-docker pull ghcr.io/lita-xyz/llvm-valida-releases/valida-build-container:v0.8.0-alpha-arm64
+docker pull ghcr.io/lita-xyz/llvm-valida-releases/valida-build-container:v0.9.0-alpha-arm64
 
 # cd your-valida-project
 
 # Enter the container:
-docker run --platform linux/arm64 -it --rm -v $(realpath .):/src ghcr.io/lita-xyz/llvm-valida-releases/valida-build-container:v0.8.0-alpha-arm64
+docker run --platform linux/arm64 -it --rm -v $(realpath .):/src ghcr.io/lita-xyz/llvm-valida-releases/valida-build-container:v0.9.0-alpha-arm64
 
 # You are now in a shell with the valida rust toolchain installed!
 ```
 
 # Non-Docker-Based Installation (x86_64 Linux only)
 
-For instructions for installation on certain x86_64 Linux platforms, such as Ubuntu 24.04 LTS or later, see [the release notes for the latest release](https://github.com/lita-xyz/valida-releases/releases/tag/v0.8.0-alpha).
+For instructions for installation on certain x86_64 Linux platforms, such as Ubuntu 24.04 LTS or later, see [the release notes for the latest release](https://github.com/lita-xyz/valida-releases/releases/tag/v0.9.0-alpha).
 
 # Usage instructions
 
@@ -112,11 +112,56 @@ valida prove target/valida-unknown-baremetal-gnu/debug/fibonacci proof
 valida verify target/valida-unknown-baremetal-gnu/debug/fibonacci proof log
 ```
 
+## Using the Valida Rust API
+
+The Valida Rust API streamlines the process of invoking the Valida VM from within Rust programs. See [the Rust docs](https://docs.rs/valida-vm-api-linux-x86/0.9.0-alpha/valida_vm_api_linux_x86/) and [the example](https://github.com/lita-xyz/valida-vm-api-test) for details on how to use it. 
+
+## Using the Valida client-side API
+
+The Valida client-side API enables creating and verifying Valida proofs of execution within the browser. This enables use cases which require proofs to run on the client side in web apps.
+
+To use the Valida client-side API, you can start by copying the example project which is located in the installed toolchain at `/valida-toolchain/examples/wasm/client-side-example`. 
+
+You will need to embed your guest program (the one whose execution you wish to prove) in your client-side code. You can do this by taking the compiled guest program, base64 encoding it, and ingesting it using Webpack. The compiled guest program is located in `target/valida-unknown-baremetal-gnu`. For example, after you run `cargo +valida build --release` on your guest program called `program`, the compiled guest program is located at `target/valida-unknown-baremetal-gnu/release/program`.
+
+Supposing the compiled program is located at `./program`, to base64 encode it, you could run the following command: `base64 program >program.base64`.
+
+The example project illustrates how to ingest the compiled, base64-encoded program into a client-side app. This is accomplished using the following rule in `webpack.config.js`:
+
+```javascript
+  module: {
+    rules: [
+      {
+        test: /\.base64/,
+        type: 'asset/source',
+      }
+    ]
+  }
+```
+
+With this rule in place, the base64-encoded program can be imported as simply as:
+
+```javascript
+import programBase64 from "./program.base64";
+```
+
+To import the Valida prover, use a line like:
+
+```javascript
+import * as valida from "valida-basic-api-wasm";
+```
+
+For this to work, `valida-basic-api-wasm` will need to be included in your `package.json`. Once you have done this, `valida` is an object containing methods with the following type signatures:
+
+```typescript
+export function run(program_bytes: Uint8Array, stdin: Uint8Array): Uint8Array;
+export function prove(program_bytes: Uint8Array, stdin: Uint8Array): Uint8Array;
+export function verify(program_bytes: Uint8Array, stdout: Uint8Array, proof: Uint8Array): void;
+```
+
 ## Writing Rust programs to run on Valida
 
-For a starting point to build a project using the Rust Valida toolchain, please take a look at
-[the template project](https://github.com/lita-xyz/fibonacci). You can clone this repo and use
-it as a starting point for your project. You should be able to write Rust programs more or less
+For a starting point to build a project using the Rust Valida toolchain, you can create a Rust project using [`cargo new`](https://doc.rust-lang.org/cargo/commands/cargo-new.html). You should be able to write Rust programs more or less
 as normal. There are a few limitations to keep in mind:
 
  * All of the usual operating system facilities are unavailable, except for standard in (`stdin`)
@@ -184,6 +229,7 @@ The following examples are available under `/valida-toolchain/examples/rust`:
  * `guessing_game`: An interactive number guessing example
  * `hello_world`: The classic "hello world" example
  * `json_contains`: JSON parsing and property fetching
+ * `keccak-crate`: Computes a Keccak hash
  * `palindrome`: Test if a string is a palindrome
  * `prime_factorization`: Check prime factorization
  * `secp256k1`: ECDSA Secp256k1 signature verification
@@ -194,7 +240,14 @@ The following examples are available under `/valida-toolchain/examples/rust`:
 
 The [reva](https://github.com/lita-xyz/reva) example executes Ethereum blocks in Valida. This is a work in progress and may produce results that are incorrect. This is plausibly the most complex program that has been run in Valida so far.
 
-If you have installed the toolchain, see `/valida-toolchain/examples/rust` for some more examples of Rust Valida projects.
+### Using Keccak acceleration
+
+The Valida VM has the capability of accelerated Keccak hash proving. To use this capability in Rust, you can simply import `sha3::Keccak256` and use the Keccak hasher in the `sha3` crate in the usual way. The `keccak-crate` example located at `/valida-toolchain/examples/rust/keccak-crate` exemplifies this usage. You must use Lita's forked version of the Keccak crate, using a line in your `Cargo.toml` such as:
+
+```
+[dependencies]
+sha3 = { git = "https://github.com/lita-xyz/hashes", default-features = false }
+```
 
 ## Compiling and running C programs
 
@@ -292,4 +345,3 @@ If you have any issues to report, please report them at [the llvm-valida-release
 
  * The prover is unsound, which means that verifying a proof does not provide completely convincing evidence that the statement being proven is true. This will be resolved once some missing constraints are added.
  * There are some issues with standard I/O functions in Rust when it comes to the behavior of interactive programs. Sometimes, code behaves differently in Valida vs native code, such as sometimes needing ctrl+D to be pressed twice instead of once to signal end of input.
- * Some Rust programs are compiled incorrectly when compiled to Valida in release mode.
