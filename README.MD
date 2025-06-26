@@ -100,10 +100,11 @@ cargo +valida build
 valida run --fast target/valida-unknown-baremetal-gnu/debug/fibonacci log
 ```
 
-6. Prove the execution (taking input from `log`):
+6. Prove the execution (taking input from `input`):
 
 ```
-valida prove target/valida-unknown-baremetal-gnu/debug/fibonacci proof log
+echo 4 >input
+valida prove target/valida-unknown-baremetal-gnu/debug/fibonacci proof input
 ```
 
 7. Verify the proof:
