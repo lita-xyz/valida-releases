@@ -19,12 +19,12 @@ To install and use the toolchain via Docker on a 64-bit computer with an Intel-c
 
 ```bash
 # Download the container
-docker pull ghcr.io/lita-xyz/llvm-valida-releases/valida-build-container:v0.10.0-amd64
+docker pull ghcr.io/lita-xyz/llvm-valida-releases/valida-build-container:v1.0.0-amd64
 
 # cd your-valida-project
 
 # Enter the container:
-docker run --platform linux/amd64 -it --rm -v $(realpath .):/src ghcr.io/lita-xyz/llvm-valida-releases/valida-build-container:v0.10.0-amd64
+docker run --platform linux/amd64 -it --rm -v $(realpath .):/src ghcr.io/lita-xyz/llvm-valida-releases/valida-build-container:v1.0.0-amd64
 
 # You are now in a shell with the valida rust toolchain installed!
 ```
@@ -35,12 +35,12 @@ To install and use the toolchain via Docker on a 64-bit computer with an ARM64-c
 
 ```bash
 # Download the container
-docker pull ghcr.io/lita-xyz/llvm-valida-releases/valida-build-container:v0.10.0-arm64
+docker pull ghcr.io/lita-xyz/llvm-valida-releases/valida-build-container:v1.0.0-arm64
 
 # cd your-valida-project
 
 # Enter the container:
-docker run --platform linux/arm64 -it --rm -v $(realpath .):/src ghcr.io/lita-xyz/llvm-valida-releases/valida-build-container:v0.10.0-arm64
+docker run --platform linux/arm64 -it --rm -v $(realpath .):/src ghcr.io/lita-xyz/llvm-valida-releases/valida-build-container:v1.0.0-arm64
 
 # You are now in a shell with the valida rust toolchain installed!
 ```
@@ -156,7 +156,7 @@ For this to work, `valida-basic-api-wasm` will need to be included in your `pack
 
 ```typescript
 export function run(program_bytes: Uint8Array, stdin: Uint8Array, max_trace_height: number): Uint8Array;
-export function prove(program_bytes: Uint8Array, stdin: Uint8Array, max_trace_height: number): Uint8Array;
+export function prove(program_bytes: Uint8Array, stdin: Uint8Array, max_trace_height: number, max_parallel_segments): Uint8Array;
 export function verify(program_bytes: Uint8Array, stdout: Uint8Array, proof: Uint8Array, max_trace_height: number): void;
 ```
 
